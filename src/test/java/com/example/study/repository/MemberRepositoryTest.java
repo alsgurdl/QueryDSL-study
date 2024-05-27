@@ -309,6 +309,10 @@ class MemberRepositoryTest {
     void join() {
         // given
 
+        // Oracle DB의 경우, Oracle의 조인 문법도 사용이 가능하다.
+        // SELECT * FROM employees, department WHERE ~~~
+        // select(), from(employees, departments). where(~~~~)
+
         // when
         List<Tuple> result = factory.select(member.userName, team.name)
                 // .selectFrom(member) // select * FROM tbl_member
@@ -375,6 +379,41 @@ class MemberRepositoryTest {
         // ** 서브 쿼리는 from 절에서는 구현이 안된다. **
     }
 
+    @Test
+    @DisplayName("나이 평균 나이 이상인 회원을 조회")
+    void subQueryGoe() {
+        // given
+        QMember m2 = new QMember("m2");
+        // when
+        List<Member> result = factory.selectFrom(member)
+                .where(member.age.goe(
+                        // JPAExpressions는 from절을 제외하고,
+                        // select와 where절에서 사용이 가능하다.
+                        // JPQL도 마찬가지로 from절 서브쿼리 사용이 불가하다.
+                        // --> 해결 방법: Native SQL을 작성하던지,
+                        // MyBatis or JdbcTemplate 이용, 따로따로 두 번 조회도 사용.
 
+                        JPAExpressions
+                                .select(m2.age.avg())
+                                .from(m2)
+                ))
+                .fetch();
 
+        // then
+        result.forEach(System.out::println);
+    }
+
+    @Test
+    @DisplayName("동적 sql 테스트")
+    void dynamicQueryTest() {
+        // given
+        String name = null;
+        Integer age = null;
+        // when
+        List<Member> result = memberRepository.findUser(name, age);
+        // then
+        System.out.println("\n\n\n");
+        result.forEach(System.out::println);
+        System.out.println("\n\n\n");
+    }
 }

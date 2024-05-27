@@ -8,4 +8,6 @@ import java.util.List;
 public interface MemberRepositoryCustom {
     // JpaRepository를 상속(extends)하지 않았기 때문에 하기 findByName은 JPA에 속한 Query 메서드가 아니다.
     List<Member> findByName(String name);
+
+    List<Member> findUser(String nameParam, Integer ageParam);
 }
