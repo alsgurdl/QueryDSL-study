@@ -22,6 +22,8 @@ public class Team {
 
     private String name;
 
+    // 한 팀(One)에 여러 명(Many)의 Member가 들어간다.
+    // 그 관계를 @OneToMany
     @OneToMany(mappedBy = "team")
     @Builder.Default
     private List<Member> members = new ArrayList<>();
